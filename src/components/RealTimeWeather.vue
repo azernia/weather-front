@@ -44,19 +44,21 @@ import {getWeather} from "@/api/weather";
 // echarts
 import { use } from "echarts/core";
 import { CanvasRenderer } from "echarts/renderers";
-import { PieChart } from "echarts/charts";
+import { LineChart } from "echarts/charts";
 import {
   TitleComponent,
   TooltipComponent,
-  LegendComponent
+  LegendComponent,
+  GridComponent
 } from "echarts/components";
 import VChart, { THEME_KEY } from "vue-echarts";
 use([
   CanvasRenderer,
-  PieChart,
+  LineChart,
   TitleComponent,
   TooltipComponent,
-  LegendComponent
+  LegendComponent,
+  GridComponent
 ]);
 
 export default {
@@ -214,44 +216,21 @@ export default {
       },
       option: {
         title: {
-          text: "Traffic Sources",
+          text: "一小时内雷达降雨强度",
           left: "center"
         },
-        tooltip: {
-          trigger: "item",
-          formatter: "{a} <br/>{b} : {c} ({d}%)"
+        xAxis: {
+          type: 'category',
+          data: []
         },
-        legend: {
-          orient: "vertical",
-          left: "left",
-          data: [
-            "Direct",
-            "Email",
-            "Ad Networks",
-            "Video Ads",
-            "Search Engines"
-          ]
+        yAxis: {
+          type: 'value'
         },
         series: [
           {
-            name: "Traffic Sources",
-            type: "pie",
-            radius: "55%",
-            center: ["50%", "60%"],
-            data: [
-              { value: 335, name: "Direct" },
-              { value: 310, name: "Email" },
-              { value: 234, name: "Ad Networks" },
-              { value: 135, name: "Video Ads" },
-              { value: 1548, name: "Search Engines" }
-            ],
-            emphasis: {
-              itemStyle: {
-                shadowBlur: 10,
-                shadowOffsetX: 0,
-                shadowColor: "rgba(0, 0, 0, 0.5)"
-              }
-            }
+            data: [0.1571,0.1419],
+            type: 'line',
+            smooth: true
           }
         ]
       }
@@ -261,7 +240,7 @@ export default {
     VChart
   },
   provide: {
-    [THEME_KEY]: "dark"
+    [THEME_KEY]: "white"
   },
   mounted() {
     this.getRealTimeWeather()
@@ -274,7 +253,15 @@ export default {
         Object.assign(this.realTimeWeatherForm, realTimeWeatherData);
         this.realTimeWeatherForm.comfort = realTimeWeatherData.life_index.comfort.index;
         let minutelyWeatherResp = await getWeather("minutelyWeather");
-        Object.assign(this.minutelyWeatherForm, minutelyWeatherResp.data.result);
+        let minutelyWeatherData = minutelyWeatherResp.data.result;
+        Object.assign(this.minutelyWeatherForm, minutelyWeatherData);
+        let timeArray = [];
+        for (let i = 1; i <= 60; i++) {
+          timeArray[i - 1] = i;
+        }
+        this.option.xAxis.data = timeArray;
+        console.log(minutelyWeatherData.minutely.precipitation);
+        this.option.series.data = minutelyWeatherData.minutely.precipitation;
       } catch (e) {
         console.error(e);
       }
