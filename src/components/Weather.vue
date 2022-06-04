@@ -28,8 +28,8 @@ export default {
 
 <style lang="scss" scoped>
 .container {
-  width: 600px;
-  height: 450px;
+  width: 88%;
+  height: 55%;
   border: 1px solid black;
   border-radius: 15%;
   margin: 0 auto;
