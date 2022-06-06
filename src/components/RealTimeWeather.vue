@@ -1,6 +1,10 @@
 <template>
   <div>
-    <el-form ref="realTimeWeatherForm" :model="realTimeWeatherForm" label-width="30%">
+    <div class="btn-class">
+      <i class="el-icon-refresh" @click="getRealTimeWeather"></i>
+      <!--<el-button type="primary" @click="getRealTimeWeather">重新获取</el-button>-->
+    </div>
+    <el-form ref="realTimeWeatherForm" :model="realTimeWeatherForm" >
       <el-form-item label="天气现象">
         <el-select v-model="realTimeWeatherForm.skycon">
           <el-option
@@ -27,14 +31,13 @@
         <el-input v-model="realTimeWeatherForm.temperature"></el-input>
       </el-form-item>
     </el-form>
-    <el-form ref="minutelyWeatherForm" :model="minutelyWeatherForm" label-width="30%">
+    <el-form ref="minutelyWeatherForm" :model="minutelyWeatherForm" >
       <el-form-item label="预测">
         <el-input v-model="minutelyWeatherForm.forecast_keypoint"></el-input>
       </el-form-item>
     </el-form>
-    <v-chart class="chart" :option="option" />
-    <div class="btn-class">
-      <el-button type="primary" @click="getRealTimeWeather">重新获取</el-button>
+    <div class="line-chart-wrapper">
+      <v-chart class="chart-wrapper" :option="option" />
     </div>
   </div>
 </template>
@@ -49,7 +52,8 @@ import {
   TitleComponent,
   TooltipComponent,
   LegendComponent,
-  GridComponent
+  GridComponent,
+  DataZoomComponent
 } from "echarts/components";
 import VChart, { THEME_KEY } from "vue-echarts";
 use([
@@ -58,7 +62,8 @@ use([
   TitleComponent,
   TooltipComponent,
   LegendComponent,
-  GridComponent
+  GridComponent,
+  DataZoomComponent
 ]);
 
 export default {
@@ -219,6 +224,15 @@ export default {
           text: "一小时内雷达降雨强度",
           left: "center"
         },
+        dataZoom: [
+          {
+            type: 'inside',
+            xAxisIndex: [0],
+            start: 0,
+            end: 30,
+            filterMode: 'filter'
+          }
+        ],
         xAxis: {
           type: 'category',
           data: []
@@ -228,7 +242,7 @@ export default {
         },
         series: [
           {
-            data: [0.1571,0.1419],
+            data: [],
             type: 'line',
             smooth: true
           }
@@ -260,8 +274,7 @@ export default {
           timeArray[i - 1] = i;
         }
         this.option.xAxis.data = timeArray;
-        console.log(minutelyWeatherData.minutely.precipitation);
-        this.option.series.data = minutelyWeatherData.minutely.precipitation;
+        this.option.series[0].data = minutelyWeatherData.minutely.precipitation;
       } catch (e) {
         console.error(e);
       }
@@ -273,16 +286,20 @@ export default {
 <style lang="scss" scoped>
 .btn-class {
   display: flex;
-  justify-content: center;
+  justify-content: right;
+  margin-right: 1rem;
+  margin-bottom: 1rem;
 }
-
+::v-deep .el-form-item .el-form-item__label {
+  width: 5.8rem;
+}
 .el-select {
-  width: 82%;
+  width: 15rem;
 }
 .el-input {
-  width: 82%;
+  width: 15rem;
 }
-.chart {
-  height: 400px;
+.chart-wrapper {
+  height: 18rem;
 }
 </style>

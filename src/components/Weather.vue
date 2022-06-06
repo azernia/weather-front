@@ -28,10 +28,10 @@ export default {
 
 <style lang="scss" scoped>
 .container {
-  width: 88%;
+  width: 100%;
   height: 55%;
   border: 1px solid black;
-  border-radius: 15%;
+  border-radius: 1rem;
   margin: 0 auto;
   .tab-class {
     display: flex;
