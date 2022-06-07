@@ -262,13 +262,19 @@ export default {
   methods: {
     async getRealTimeWeather() {
       try {
+        // 实时
         let realTimeWeatherResp = await getWeather("realTimeWeather");
         let realTimeWeatherData = realTimeWeatherResp.data.result.realtime;
         Object.assign(this.realTimeWeatherForm, realTimeWeatherData);
+        // 分钟
         this.realTimeWeatherForm.comfort = realTimeWeatherData.life_index.comfort.index;
         let minutelyWeatherResp = await getWeather("minutelyWeather");
         let minutelyWeatherData = minutelyWeatherResp.data.result;
         Object.assign(this.minutelyWeatherForm, minutelyWeatherData);
+        // 一天
+        // let daily = await getWeather("dailyWeather");
+        // console.log(daily);
+        // 一小时雷达降雨量图标
         let timeArray = [];
         for (let i = 1; i <= 60; i++) {
           timeArray[i - 1] = i;
